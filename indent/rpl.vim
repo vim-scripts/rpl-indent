@@ -1,8 +1,8 @@
 " Vim indent file
 " Language:	RPL/2
-" Version:	0.2
-" Last Change:	2002 August 16
-" Maintainer:	BERTRAND Joël <rpl2@free.fr>
+" Version:	0.3
+" Last Change:	2005 October 22
+" Maintainer:	BERTRAND Joël <joel.bertrand@systella.fr>
 
 " Only load this indent file when no other was loaded.
 if exists("b:did_indent")
@@ -24,12 +24,16 @@ function RplGetIndent(lnum)
   " Strip tail comment
   let prevstat=substitute(prevline, '!.*$', '', '')
 
-  " Add a shiftwidth to statements following if, iferr, then, else, elseif, 
+  " Add a shiftwidth to statements following if, iferr, then, else, elseif,
   " case, select, default, do, until, while, repeat, for, start
   if prevstat =~? '\<\(if\|iferr\|do\|while\)\>' && prevstat =~? '\<end\>'
   elseif prevstat =~? '\(^\|\s\+\)<<\($\|\s\+\)' && prevstat =~? '\s\+>>\($\|\s\+\)'
   elseif prevstat =~? '\<\(if\|iferr\|then\|else\|elseif\|select\|case\|do\|until\|while\|repeat\|for\|start\|default\)\>' || prevstat =~? '\(^\|\s\+\)<<\($\|\s\+\)'
     let ind = ind + &sw
+  endif
+
+  if prevstat =~? '/\*'
+    let ind = ind + 1
   endif
 
   " Subtract a shiftwidth from then, else, elseif, end, until, repeat, next,
@@ -41,6 +45,9 @@ function RplGetIndent(lnum)
     let ind = ind - &sw
   endif
 
+  if prevstat =~? '\*/'
+    let ind = ind - 1
+  endif
   return ind
 endfunction
 
